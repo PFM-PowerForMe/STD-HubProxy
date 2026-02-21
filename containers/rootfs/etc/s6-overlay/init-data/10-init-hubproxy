@@ -1,0 +1,7 @@
+#!/usr/bin/env sh
+
+CONFIG_FILE="/opt/hubproxy/config.toml"
+PROXY_VAL="${CR_HUBPROXY_PROXY:-socks5://127.0.0.1:1080}"
+
+dasel -i toml -o toml --root "access.proxy = '${PROXY_VAL}'" < "$CONFIG_FILE" > "${CONFIG_FILE}.tmp" && \
+     mv "${CONFIG_FILE}.tmp" "$CONFIG_FILE"
