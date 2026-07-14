@@ -1,3 +1,12 @@
+FROM docker.io/library/node:lts AS frontend
+WORKDIR /web
+COPY source-src/web/package.json source-src/web/package-lock.json ./
+RUN npm ci
+COPY source-src/web/ .
+RUN npm run build
+
+
+
 # 构建时
 FROM docker.io/library/golang:alpine AS builder
 ARG REPO
@@ -25,6 +34,7 @@ WORKDIR /output/
 WORKDIR /source/
 COPY source-src/ .
 WORKDIR /source/src
+COPY --from=frontend /src/dist ./dist
 RUN go mod download
 RUN go build -o /output/hubproxy -trimpath -ldflags="-w -s -X main.Version=${TAG}" .
 RUN upx -9 /output/hubproxy
